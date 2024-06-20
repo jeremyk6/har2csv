@@ -65,17 +65,19 @@ with open(args.output, 'w', newline='') as csvfile:
 
     # iterate over each request
     for request in requests:
+
+        # if response status is not 200 (OK), skip
+        response_status = request['response']['status']
+        if response_status != 200:
+            continue
+
         date = request['startedDateTime']
         url = request['request']['url']
+        print(url)
         query_params = {}
         for param in request['request']['queryString']: query_params[param['name']] = param['value']
         cache = True if request['cache'] else False
         size = request['response']['content']['size']
-        response_status = request['response']['status']
-
-        # if response status is not 200 (OK), skip
-        if response_status != 200:
-            continue
 
         # compute bounding box as wkt
         tile_x, tile_y, tile_z, layer = handle_url_parameters(url, query_params)
